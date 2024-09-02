@@ -1,5 +1,6 @@
 from datetime import timedelta
 from typing import Dict, List
+from warnings import simplefilter
 
 import numpy as np
 import pandas as pd
@@ -7,16 +8,17 @@ import yfinance as yf
 
 from tools import sma
 
+simplefilter(action="ignore", category=pd.errors.PerformanceWarning)
 pd.options.mode.copy_on_write = True
 
 # def
-MAX_STOCKS = 5
-QUANTILE_LOW_MOMENTUM = 0.1
+MAX_STOCKS = 10
+QUANTILE_LOW_MOMENTUM = 0.15
 QUANTILE_HIGH_BETA = 0.9
 
 
 def get_monthly_index():
-    sp_500 = yf.download("^GSPC")
+    sp_500 = yf.download("^GSPC", start="2010-01-01")
     sp_500["sma"] = sma(sp_500.Close, 150)
     sp_500["Date"] = sp_500.index
     sp_500["month"] = sp_500["Date"].dt.strftime("%y-%m")
@@ -36,24 +38,11 @@ def get_monthly_index():
 
 
 def get_stocks(symbols: List[str]) -> Dict[str, pd.DataFrame]:
-    """_summary_
-
-    Args:
-        symbols (List[str]): _description_
-
-    Returns:
-        Dict[str, pd.DataFrame]: _description_
-    """
-
     dfs = {}
     stock_data = yf.download(
-        symbols,
-        rounding=2,
-        progress=False,
-        group_by="ticker",
+        symbols, rounding=2, progress=False, group_by="ticker", start="2010-01-01"
     )
 
-    # perform some pre preparation
     for symbol in stock_data.columns.get_level_values(0).unique():
         # drop unclear items
         df = stock_data[symbol]
@@ -90,7 +79,6 @@ def add_indicators(data: pd.DataFrame) -> pd.DataFrame:
 
 def max_beta(df: pd.DataFrame) -> pd.DataFrame:
     df["month"] = df.index.strftime("%y-%m")
-    # df["Date"] = df.index
 
     # Sort DataFrame by month and percentage change in descending order
     df_sorted = df.sort_values(by=["month", "pct"], ascending=[True, False])
@@ -106,8 +94,7 @@ def max_beta(df: pd.DataFrame) -> pd.DataFrame:
     # Merge the calculated beta values back into the original DataFrame
     df = df.merge(monthly_top_five_avg, on="month", how="left").set_index(df.index)
 
-    # Clean up the temporary columns
-    return df  # .drop(columns=["Date"])
+    return df
 
 
 def momentum(df: pd.DataFrame) -> pd.DataFrame:
@@ -189,11 +176,19 @@ def prepare_stocks(index: pd.DataFrame) -> pd.DataFrame:
         #    changes[12].loc[month, symbols] = np.nan
         for symbol in symbols:
             try:
-                changes[12].loc[month][symbol] = np.nan
-                # changes[12].loc[month, symbol] = np.nan
-            except:
+                # changes[12].loc[month][symbol] = np.nan
+                changes[12].loc[month, symbol] = np.nan
+            except Exception as e:
+                print(e)
                 print(month, symbol)
 
+    """
+    symbol_txt = ""
+    for key, value in neg_symbols.items():
+        symbol_txt = symbol_txt + f'{key},{",".join(value)}\n'
+    with open("./neg_symbols.csv", "w") as symbol_file:
+        symbol_file.write(symbol_txt)
+    """
     return changes[12].reset_index().set_index("Date")
 
 
