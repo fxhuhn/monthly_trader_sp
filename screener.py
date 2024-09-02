@@ -1,4 +1,5 @@
 from typing import Dict, List
+from warnings import simplefilter
 
 import numpy as np
 import pandas as pd
@@ -6,6 +7,7 @@ import yfinance as yf
 
 from tools import sma
 
+simplefilter(action="ignore", category=pd.errors.PerformanceWarning)
 pd.options.mode.copy_on_write = True
 
 # def
