@@ -1,3 +1,4 @@
+import os
 from datetime import timedelta
 from typing import Dict, List
 from warnings import simplefilter
@@ -14,7 +15,33 @@ pd.options.mode.copy_on_write = True
 # def
 MAX_STOCKS = 10
 QUANTILE_LOW_MOMENTUM = 0.15
-QUANTILE_HIGH_BETA = 0.9
+QUANTILE_HIGH_BETA = 0.85
+
+
+class SP_500_stocks:
+    df = None
+
+    def __init__(self, filename="S&P_500_Historical_04-08-2024.csv") -> None:
+        if os.path.isfile(filename):
+            self.df = pd.read_csv(filename, index_col="date")
+            self.df = self.df[self.df.index >= "2000-01-01"]
+            self.df["tickers"] = self.df["tickers"].apply(
+                lambda x: sorted(x.split(","))
+            )
+
+    def get_symbols(self, year: int, month: int, day: int = 1) -> list[str]:
+        if self.df is None:
+            return None
+
+        snap_shot = f"{year}-{month:02}-{day:02}"
+        df2 = self.df[self.df.index <= snap_shot]
+        return df2.tail(1).tickers.values[0]
+
+    def all_symbols(self) -> list[str]:
+        return sorted(set(sum(self.df.tickers.values, [])))
+
+
+sp_500_stocks = SP_500_stocks()
 
 
 def get_monthly_index():
@@ -48,7 +75,7 @@ def get_stocks(symbols: List[str]) -> Dict[str, pd.DataFrame]:
         df = stock_data[symbol]
         df = df[~(df.High == df.Low)]
         df = df.dropna()
-        df.index = pd.to_datetime(df.index).tz_convert(None)
+        df.index = pd.to_datetime(df.index)  # .tz_convert(None)
 
         if len(df):
             dfs[symbol.lower()] = df
@@ -72,7 +99,7 @@ def resample_stocks_to_month(df: pd.DataFrame) -> pd.DataFrame:
 
 def add_indicators(data: pd.DataFrame) -> pd.DataFrame:
     data["pct"] = data.Close.pct_change()
-    data["changes"] = np.sign(data["pct"])
+    data["changes"] = np.sign(data["pct"].round(2))
 
     return data
 
@@ -109,7 +136,7 @@ def sp_500_list():
 
 
 def prepare_stocks(index: pd.DataFrame) -> pd.DataFrame:
-    stocks = get_stocks(sp_500_list())
+    stocks = get_stocks(sp_500_stocks.all_symbols())
 
     for symbol, df in stocks.items():
         df = add_indicators(df)
@@ -119,6 +146,17 @@ def prepare_stocks(index: pd.DataFrame) -> pd.DataFrame:
         df = momentum(df)
 
         stocks[symbol] = df
+
+    for index_date in index.index:
+        monthly_stocks = sp_500_stocks.get_symbols(index_date.year, index_date.month)
+        monthly_stocks = [monthly_stock.lower() for monthly_stock in monthly_stocks]
+
+        for symbol in list(set(stocks.keys()) - set(monthly_stocks)):
+            df = stocks[symbol]
+            df.loc[df.month == f"{index_date:%y-%m}", "beta"] = np.nan
+            for i in [3, 6, 9, 12]:
+                df.loc[df.month == f"{index_date:%y-%m}", f"changes_{i}"] = np.nan
+            stocks[symbol] = df
 
     change_periods = [6, 9, 12]
     changes = {
@@ -196,7 +234,7 @@ def get_top_stocks(df: pd.DataFrame) -> list:
     df = df.drop(["month", "Close", "sma"]).reset_index()
     df.columns = ["symbol", "beta"]
     df = df[df.beta > 0]
-
+    # print(df.sort_values("beta").tail(MAX_STOCKS))
     return df.sort_values("beta").tail(MAX_STOCKS).symbol.values
 
 
