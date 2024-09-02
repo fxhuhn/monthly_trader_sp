@@ -75,10 +75,15 @@ def get_stocks(symbols: List[str]) -> Dict[str, pd.DataFrame]:
         df = stock_data[symbol]
         df = df[~(df.High == df.Low)]
         df = df.dropna()
-        df.index = pd.to_datetime(df.index)  # .tz_convert(None)
+        df.index = pd.to_datetime(df.index).tz_localize(None)  # .tz_convert(None)
 
         if len(df):
             dfs[symbol.lower()] = df
+
+    try:
+        dfs.pop("googl")
+    except KeyError:
+        pass
 
     return dfs
 
