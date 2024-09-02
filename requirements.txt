@@ -1,0 +1,5 @@
+numpy
+pandas
+tabulate
+yfinance
+pandas_ta
