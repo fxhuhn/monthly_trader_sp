@@ -5,13 +5,13 @@
 ## Unchanged
 
 ## Leave
-- pgr
-- rsg
+- now
 - hig
-- mco
-- afl
-- fico
-- trv
-- mck
+- rsg
 - gddy
 - irm
+- msi
+- spgi
+- fico
+- mco
+- trv
