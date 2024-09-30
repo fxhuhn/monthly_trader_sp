@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 import yfinance as yf
 
-from tools import sma
+from tools import roc, sma
 
 simplefilter(action="ignore", category=pd.errors.PerformanceWarning)
 pd.options.mode.copy_on_write = True
@@ -105,7 +105,6 @@ def resample_stocks_to_month(df: pd.DataFrame) -> pd.DataFrame:
 def add_indicators(data: pd.DataFrame) -> pd.DataFrame:
     data["pct"] = data.Close.pct_change()
     data["changes"] = np.sign(data["pct"].round(2))
-
     return data
 
 
@@ -131,7 +130,13 @@ def max_beta(df: pd.DataFrame) -> pd.DataFrame:
 
 def momentum(df: pd.DataFrame) -> pd.DataFrame:
     for interval in [3, 6, 9, 12]:
+        df["roc"] = roc(df.Close, interval).shift(-1)
         df[f"changes_{interval}"] = df.changes.rolling(interval).sum().shift(-1)
+        df[f"changes_{interval}"] = np.where(
+            (df.roc > 0) & (df[f"changes_{interval}"] > 0),
+            df[f"changes_{interval}"] + (df.roc / 1000),
+            df[f"changes_{interval}"],
+        )
     return df
 
 
