@@ -5,13 +5,13 @@
 ## Unchanged
 
 ## Leave
-- hwm
-- trv
-- now
+- irm
 - mco
 - hig
 - msi
-- rsg
-- fico
-- irm
 - gddy
+- rsg
+- pgr
+- otis
+- hwm
+- fico
