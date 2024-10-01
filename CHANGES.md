@@ -6,12 +6,12 @@
 
 ## Leave
 - gddy
-- mco
 - pgr
+- mco
+- msi
+- irm
+- rsg
 - hwm
 - fico
-- rsg
 - hig
 - now
-- irm
-- msi
