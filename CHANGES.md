@@ -5,13 +5,13 @@
 ## Unchanged
 
 ## Leave
-- hig
-- fi
-- rsg
-- hwm
-- mco
-- gddy
 - irm
 - msi
-- fico
+- mco
+- gddy
 - trv
+- fico
+- rsg
+- hig
+- hwm
+- fi
