@@ -1,5 +1,5 @@
 numpy
 pandas
 tabulate
-yfinance
+yfinance==0.2.44
 pandas_ta
