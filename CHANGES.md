@@ -5,13 +5,13 @@
 ## Unchanged
 
 ## Leave
-- fi
-- msi
-- gddy
-- hig
-- tt
 - fico
 - rsg
+- fi
+- trgp
+- gddy
+- hig
+- jpm
+- tt
 - irm
 - hwm
-- trgp
