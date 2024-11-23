@@ -6,12 +6,12 @@
 
 ## Leave
 - fico
-- rsg
-- fi
-- trgp
 - gddy
-- hig
-- jpm
 - tt
+- hig
 - irm
+- hlt
+- oke
+- rsg
 - hwm
+- trgp
