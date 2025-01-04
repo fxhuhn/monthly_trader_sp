@@ -5,13 +5,13 @@
 ## Unchanged
 
 ## Leave
-- gddy
-- irm
-- fico
-- hlt
-- fi
-- rsg
-- v
-- goog
-- trgp
 - hig
+- fico
+- oke
+- gddy
+- gm
+- peg
+- rsg
+- ge
+- irm
+- trgp
