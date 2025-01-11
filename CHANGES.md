@@ -6,12 +6,12 @@
 
 ## Leave
 - hig
-- fico
-- oke
-- gddy
-- gm
-- peg
 - rsg
-- ge
+- oke
 - irm
 - trgp
+- gddy
+- fico
+- ge
+- tpl
+- peg
