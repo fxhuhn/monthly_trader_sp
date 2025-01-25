@@ -5,13 +5,13 @@
 ## Unchanged
 
 ## Leave
-- ge
-- jpm
-- irm
-- fico
-- gddy
 - rsg
+- ge
+- tpl
+- msi
+- pm
 - trgp
 - oke
+- gddy
+- irm
 - hig
-- tpl
