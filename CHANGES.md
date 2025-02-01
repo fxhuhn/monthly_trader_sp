@@ -5,12 +5,12 @@
 ## Unchanged
 
 ## Leave
-- ge
-- fico
-- hig
 - fi
 - rsg
+- ge
+- hig
 - gddy
+- fico
 - oke
 - pm
 - irm
